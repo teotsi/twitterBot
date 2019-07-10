@@ -20,12 +20,24 @@ class Listener(StreamListener):
             json_str = json.dumps(status._json)
             json_dict = json.loads(json_str)
             if "retweeted_status" not in json_dict:
-                if json_dict["in_reply_to_status_id"] is None and json_dict["in_reply_to_status_id_str"] is None:
-                    print(status.text)
-                    print(status)
-                else:
-                    print(status.in_reply_to_status_id)
+                if json_dict["in_reply_to_status_id"] is None and json_dict["in_reply_to_user_id_str"] is None:
+                    print("Independent tweet")
+                    if not json_dict["entities"]["urls"]:
+                        print("no urls!")
+                        if "media" in json_dict["entities"]:
+                            print("may have pictures")
+                            if not json_dict["entities"]["media"]:
+                                print("just text!")
+                        else:
+                            print("just text!")
+                    if json_dict['truncated'] == True:
+                        text = json_dict["extended_tweet"]["full_text"]
+                    else:
+                        text = json_dict["text"]
+                    print("[" + json_dict['user']['name'] + "]" + " " + text)
+                    print("Full tweet status:" + str(status))
         except Exception as e:
+            print("exceptiooon")
             print(e)
 
     def on_error(self, status_code):
