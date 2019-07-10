@@ -1,7 +1,7 @@
 import json
-from time import sleep
 
 import tweepy
+from tweepy import Stream
 # from TwitterAPI import TwitterAPI
 # api = TwitterAPI("a51HGNktVIS8WQdrg6j6FLNpZ","lMgG2ZhVSGTaqVYTybJCAPDSvvK6rHVVla3kz88FYWxyWYnF2Y","1148213677004382210-ylHKSsv4fZ0UX5Dla4EXksyRL3p3We","DV34b3uPR7fthB6FZrhqYJjSnfjBFgSnQ8B384I8MXZuV")
 # r = api.request('statuses/home_timeline', {'count':1})
@@ -9,7 +9,6 @@ import tweepy
 #     if 'text' in item:
 #         print(item)
 from tweepy.streaming import StreamListener
-from tweepy import Stream
 
 
 class Listener(StreamListener):
@@ -22,20 +21,24 @@ class Listener(StreamListener):
             if "retweeted_status" not in json_dict:
                 if json_dict["in_reply_to_status_id"] is None and json_dict["in_reply_to_user_id_str"] is None:
                     print("Independent tweet")
-                    if not json_dict["entities"]["urls"]:
+                    if "extended_tweet" in json_dict:
+                        final_dict = json_dict["extended_tweet"]
+                    else:
+                        final_dict = json_dict
+                    if not final_dict["entities"]["urls"]:
                         print("no urls!")
-                        if "media" in json_dict["entities"]:
+                        if "media" in final_dict["entities"]:
                             print("may have pictures")
-                            if not json_dict["entities"]["media"]:
+                            if not final_dict["entities"]["media"]:
                                 print("just text!")
                         else:
                             print("just text!")
-                    if json_dict['truncated'] == True:
+                    if json_dict['truncated']:
                         text = json_dict["extended_tweet"]["full_text"]
                     else:
                         text = json_dict["text"]
                     print("[" + json_dict['user']['name'] + "]" + " " + text)
-                    print("Full tweet status:" + str(status))
+                    print("Full tweet status:" + json.dumps(status._json, indent=4))
         except Exception as e:
             print("exceptiooon")
             print(e)
@@ -43,8 +46,10 @@ class Listener(StreamListener):
     def on_error(self, status_code):
         print(status_code)
 
-auth = tweepy.OAuthHandler("a51HGNktVIS8WQdrg6j6FLNpZ","lMgG2ZhVSGTaqVYTybJCAPDSvvK6rHVVla3kz88FYWxyWYnF2Y")
-auth.set_access_token("1148213677004382210-ylHKSsv4fZ0UX5Dla4EXksyRL3p3We","DV34b3uPR7fthB6FZrhqYJjSnfjBFgSnQ8B384I8MXZuV")
+
+auth = tweepy.OAuthHandler("a51HGNktVIS8WQdrg6j6FLNpZ", "lMgG2ZhVSGTaqVYTybJCAPDSvvK6rHVVla3kz88FYWxyWYnF2Y")
+auth.set_access_token("1148213677004382210-ylHKSsv4fZ0UX5Dla4EXksyRL3p3We",
+                      "DV34b3uPR7fthB6FZrhqYJjSnfjBFgSnQ8B384I8MXZuV")
 api = tweepy.API(auth)
 followees = []
 for followee in tweepy.Cursor(api.friends_ids).items():
