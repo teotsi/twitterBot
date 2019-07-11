@@ -1,5 +1,6 @@
 import json
 
+import praw
 import tweepy
 from tweepy import Stream
 # from TwitterAPI import TwitterAPI
@@ -9,6 +10,8 @@ from tweepy import Stream
 #     if 'text' in item:
 #         print(item)
 from tweepy.streaming import StreamListener
+
+reddit = praw.Reddit('NBATwitterBot', user_agent='nba bot agent')
 
 
 class Listener(StreamListener):
@@ -37,8 +40,12 @@ class Listener(StreamListener):
                         text = json_dict["extended_tweet"]["full_text"]
                     else:
                         text = json_dict["text"]
-                    print("[" + json_dict['user']['name'] + "]" + " " + text)
+                    title = "[" + json_dict['user']['name'].split(" ")[1] + "]"+text
+                    url = "twitter.com/"+json['user']['screen_name']+"/"+json_dict['id']
+                    print("[" + json_dict['user']['name'].split(" ")[1] + "]"+text)
+                    print("url: "+url)
                     print("Full tweet status:" + json.dumps(status._json, indent=4))
+                    reddit.subreddit('reddit_api_test').submit(title, url=url)
         except Exception as e:
             print("exceptiooon")
             print(e)
