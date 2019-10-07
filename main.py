@@ -49,7 +49,7 @@ class Listener(StreamListener):
         print(status_code)
 
 
-auth = tweepy.OAuthHandler("a51HGNktVIS8WQdrg6j6FLNpZ", "lMgG2ZhVSGTaqVYTybJCAPDSvvK6rHVVla3kz88FYWxyWYnF2Y")
+auth = tweepy.OAuthHandler("a51HGNktVIS8WQdrg6j6FLNpZ", "lMgG2ZhVSGTaqVYTybJCAPDSvvK6rHVVla3kz88FYWxyWYnF2Y") #example keys. use your own as these are now invalid
 auth.set_access_token("1148213677004382210-ylHKSsv4fZ0UX5Dla4EXksyRL3p3We",
                       "DV34b3uPR7fthB6FZrhqYJjSnfjBFgSnQ8B384I8MXZuV")
 api = tweepy.API(auth)
